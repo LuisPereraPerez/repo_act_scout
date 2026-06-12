@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}{{ activity.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <a href="{{ url_for('main.index') }}"
+     class="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-forest-700 transition-colors mb-6">
+     ← Volver al explorador
+  </a>
+
+  <article class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+
+    <!-- Color strip -->
+    <div class="h-2 {% if activity.environment == 'exterior' %}bg-forest-500{% elif activity.environment == 'interior' %}bg-blue-400{% else %}bg-earth-500{% endif %}"></div>
+
+    <div class="p-8 sm:p-10">
+
+      <!-- Badges -->
+      <div class="flex flex-wrap gap-2 mb-5">
+        {% for cat in activity.categories %}
+        <span class="bg-forest-50 text-forest-800 text-xs font-semibold px-3 py-1 rounded-full border border-forest-200">{{ cat.name }}</span>
+        {% endfor %}
+        {% for unit in activity.units %}
+        <span class="bg-earth-50 text-earth-700 text-xs font-semibold px-3 py-1 rounded-full border border-earth-200">{{ unit.name }}</span>
+        {% endfor %}
+      </div>
+
+      <!-- Title & meta -->
+      <h1 class="font-display text-3xl font-black text-forest-900 mb-3 leading-tight">{{ activity.title }}</h1>
+
+      <div class="flex flex-wrap items-center gap-4 text-sm text-stone-500 mb-8 pb-6 border-b border-stone-100">
+        <span class="flex items-center gap-1.5">
+          👤 Subida por <strong class="text-stone-700">{{ activity.author.username }}</strong>
+        </span>
+        <span class="flex items-center gap-1.5">
+          📅 {{ activity.created_at.strftime('%d %b %Y') }}
+        </span>
+        <span class="flex items-center gap-1.5">
+          {% if activity.environment == 'interior' %}🏠 Interior{% elif activity.environment == 'exterior' %}🌲 Exterior{% else %}↔️ Indiferente{% endif %}
+        </span>
+        <span class="flex items-center gap-1.5">
+          ⏱ {{ activity.duration_range }}
+        </span>
+      </div>
+
+      <!-- Sections -->
+      <div class="space-y-7">
+        <section>
+          <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Descripción</h2>
+          <div class="text-stone-600 leading-relaxed whitespace-pre-wrap">{{ activity.description }}</div>
+        </section>
+
+        <section>
+          <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Objetivos</h2>
+          <div class="text-stone-600 leading-relaxed whitespace-pre-wrap">{{ activity.objectives }}</div>
+        </section>
+
+        {% if activity.materials %}
+        <section>
+          <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Materiales necesarios</h2>
+          <div class="text-stone-600 leading-relaxed whitespace-pre-wrap bg-stone-50 rounded-xl p-4 border border-stone-100">{{ activity.materials }}</div>
+        </section>
+        {% endif %}
+      </div>
+
+    </div>
+  </article>
+
+  <!-- Admin approve inline if pending -->
+  {% if current_user.is_authenticated and current_user.is_admin() and activity.status == 'pending' %}
+  <div class="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-4">
+    <div>
+      <p class="font-semibold text-amber-900 text-sm">Esta actividad está pendiente de aprobación</p>
+      <p class="text-xs text-amber-700 mt-0.5">Solo los administradores pueden verla ahora mismo.</p>
+    </div>
+    <form method="POST" action="{{ url_for('admin.approve_activity', activity_id=activity.id) }}">
+      <button type="submit"
+              class="bg-forest-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-forest-900 transition-colors whitespace-nowrap">
+        ✓ Aprobar
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

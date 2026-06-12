@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Subir actividad{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <div class="mb-8">
+    <h1 class="font-display text-3xl font-black text-forest-900 mb-1">Subir actividad</h1>
+    <p class="text-stone-500 text-sm">Comparte una actividad con la comunidad. Será revisada antes de publicarse.</p>
+  </div>
+
+  <div class="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4 mb-8 flex gap-3 text-sm">
+    <span class="text-lg shrink-0">📋</span>
+    <p class="text-amber-800">Tu actividad quedará en estado <strong>pendiente</strong> hasta que un administrador la revise y apruebe. Normalmente este proceso tarda menos de 48 horas.</p>
+  </div>
+
+  <form method="POST" action="{{ url_for('main.upload_activity') }}" novalidate>
+
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 space-y-6">
+
+      <!-- Title -->
+      <div>
+        <label for="title" class="block text-sm font-semibold text-stone-700 mb-1.5">
+          Título <span class="text-red-500">*</span>
+        </label>
+        <input type="text" id="title" name="title"
+               value="{{ form_data.get('title', '') }}"
+               placeholder="Un nombre claro y descriptivo para tu actividad"
+               class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent" />
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label for="description" class="block text-sm font-semibold text-stone-700 mb-1.5">
+          Descripción <span class="text-red-500">*</span>
+        </label>
+        <textarea id="description" name="description" rows="5"
+                  placeholder="Explica en qué consiste la actividad, cómo se juega o desarrolla…"
+                  class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 resize-y">{{ form_data.get('description', '') }}</textarea>
+      </div>
+
+      <!-- Objectives -->
+      <div>
+        <label for="objectives" class="block text-sm font-semibold text-stone-700 mb-1.5">
+          Objetivos educativos <span class="text-red-500">*</span>
+        </label>
+        <textarea id="objectives" name="objectives" rows="3"
+                  placeholder="¿Qué aprenden o desarrollan los participantes? (valores, habilidades…)"
+                  class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 resize-y">{{ form_data.get('objectives', '') }}</textarea>
+      </div>
+
+      <!-- Materials -->
+      <div>
+        <label for="materials" class="block text-sm font-semibold text-stone-700 mb-1.5">
+          Materiales necesarios <span class="text-stone-400 font-normal">(opcional)</span>
+        </label>
+        <textarea id="materials" name="materials" rows="2"
+                  placeholder="Lista los materiales que se necesitan para realizar la actividad"
+                  class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 resize-y">{{ form_data.get('materials', '') }}</textarea>
+      </div>
+
+      <!-- Environment + Duration (2 col) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1.5">
+            Entorno <span class="text-red-500">*</span>
+          </label>
+          <select name="environment"
+                  class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-500">
+            {% for val, label in [('indiferente', '↔️ Indiferente'), ('interior', '🏠 Interior'), ('exterior', '🌲 Exterior')] %}
+            <option value="{{ val }}" {% if form_data.get('environment', 'indiferente') == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1.5">
+            Duración <span class="text-red-500">*</span>
+          </label>
+          <select name="duration_range"
+                  class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-500">
+            {% for val, label in [('<30 min', '⚡ Menos de 30 min'), ('30-60 min', '⏱ Entre 30 y 60 min'), ('+60 min', '🕐 Más de 60 min')] %}
+            <option value="{{ val }}" {% if form_data.get('duration_range') == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Units (checkboxes) -->
+      <div>
+        <label class="block text-sm font-semibold text-stone-700 mb-2">
+          Sección(es) <span class="text-red-500">*</span>
+        </label>
+        <div class="flex flex-wrap gap-3">
+          {% for unit in units %}
+          <label class="flex items-center gap-2 cursor-pointer bg-stone-50 hover:bg-earth-50 border border-stone-200 hover:border-earth-300 rounded-xl px-4 py-2.5 transition-colors">
+            <input type="checkbox" name="units" value="{{ unit.id }}"
+                   {% if form_data.getlist and unit.id|string in form_data.getlist('units') %}checked{% endif %}
+                   class="accent-earth-700 w-4 h-4">
+            <span class="text-sm font-medium text-stone-700">{{ unit.name }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Categories (checkboxes) -->
+      <div>
+        <label class="block text-sm font-semibold text-stone-700 mb-2">
+          Tipo de actividad <span class="text-red-500">*</span>
+        </label>
+        <div class="flex flex-wrap gap-3">
+          {% for cat in categories %}
+          <label class="flex items-center gap-2 cursor-pointer bg-stone-50 hover:bg-forest-50 border border-stone-200 hover:border-forest-300 rounded-xl px-4 py-2.5 transition-colors">
+            <input type="checkbox" name="categories" value="{{ cat.id }}"
+                   {% if form_data.getlist and cat.id|string in form_data.getlist('categories') %}checked{% endif %}
+                   class="accent-forest-700 w-4 h-4">
+            <span class="text-sm font-medium text-stone-700">{{ cat.name }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Submit -->
+    <div class="mt-6 flex items-center justify-end gap-4">
+      <a href="{{ url_for('main.index') }}"
+         class="text-sm font-medium text-stone-500 hover:text-stone-700 transition-colors">Cancelar</a>
+      <button type="submit"
+              class="bg-forest-700 text-white font-semibold text-sm px-8 py-3 rounded-xl hover:bg-forest-900 transition-colors shadow-sm">
+        Enviar para revisión →
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}
