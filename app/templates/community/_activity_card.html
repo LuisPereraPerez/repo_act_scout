@@ -1,0 +1,34 @@
+<a href="{{ url_for('main.activity_detail', activity_id=activity.id) }}"
+   class="group bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-md hover:border-forest-300 transition-all duration-200 flex flex-col overflow-hidden">
+
+  <div class="h-1.5 {% if activity.environment == 'exterior' or activity.environment == 'acampada' or activity.environment == 'montana' %}bg-forest-500
+              {% elif activity.environment == 'interior' %}bg-blue-400
+              {% elif activity.environment == 'piscina' or activity.environment == 'agua' %}bg-cyan-400
+              {% else %}bg-earth-500{% endif %}"></div>
+
+  <div class="p-5 flex flex-col flex-1">
+    <div class="flex flex-wrap gap-1.5 mb-3">
+      {% for cat in activity.categories[:2] %}
+      <span class="bg-forest-50 text-forest-800 text-xs font-semibold px-2 py-0.5 rounded-full border border-forest-200">{{ cat.name }}</span>
+      {% endfor %}
+      {% for unit in activity.units[:2] %}
+      <span class="bg-earth-50 text-earth-700 text-xs font-semibold px-2 py-0.5 rounded-full border border-earth-200">{{ unit.name }}</span>
+      {% endfor %}
+    </div>
+
+    <h3 class="font-display font-bold text-stone-900 group-hover:text-forest-800 transition-colors mb-2 leading-snug">
+      {{ activity.title }}
+    </h3>
+    <p class="text-sm text-stone-400 line-clamp-2 flex-1 mb-4">
+      {{ activity.description[:120] }}{% if activity.description|length > 120 %}…{% endif %}
+    </p>
+
+    <div class="flex items-center justify-between text-xs text-stone-400 pt-3 border-t border-stone-100">
+      <span>⏱ {{ activity.duration_range }}</span>
+      <span class="flex items-center gap-1">
+        ❤️ {{ activity.likes_count }}
+        {% if activity.attachment_filename %}<span class="ml-2">{{ activity.attachment_icon }}</span>{% endif %}
+      </span>
+    </div>
+  </div>
+</a>

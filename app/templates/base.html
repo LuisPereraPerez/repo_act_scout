@@ -59,9 +59,13 @@
               </a>
             {% endif %}
             <div class="flex items-center gap-3 pl-3 border-l border-stone-200">
-              <span class="text-sm text-stone-500">Hola, <strong class="text-stone-700">{{ current_user.username }}</strong></span>
+              <a href="{{ url_for('community.profile', username=current_user.username) }}"
+                 class="flex items-center gap-2 text-sm font-semibold text-stone-700 hover:text-forest-700 transition-colors">
+                <span class="w-7 h-7 rounded-lg bg-forest-700 text-white flex items-center justify-center text-xs font-black">{{ current_user.username[0].upper() }}</span>
+                {{ current_user.username }}
+              </a>
               <a href="{{ url_for('auth.logout') }}"
-                 class="text-sm font-medium text-stone-500 hover:text-red-600 transition-colors">Salir</a>
+                 class="text-sm font-medium text-stone-400 hover:text-red-500 transition-colors">Salir</a>
             </div>
           {% else %}
             <div class="flex items-center gap-3">

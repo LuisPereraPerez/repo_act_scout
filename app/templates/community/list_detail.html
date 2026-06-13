@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}{{ custom_list.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <a href="{{ url_for('community.profile', username=custom_list.owner.username, tab='listas') }}"
+     class="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-forest-700 transition-colors mb-6">
+     ← Volver al perfil de {{ custom_list.owner.username }}
+  </a>
+
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="text-2xl">{% if custom_list.is_public %}📂{% else %}🔒{% endif %}</span>
+        <h1 class="font-display text-3xl font-black text-stone-900">{{ custom_list.name }}</h1>
+      </div>
+      {% if custom_list.description %}
+      <p class="text-stone-500 text-sm ml-9">{{ custom_list.description }}</p>
+      {% endif %}
+      <p class="text-xs text-stone-400 ml-9 mt-1">
+        Por <a href="{{ url_for('community.profile', username=custom_list.owner.username) }}"
+               class="font-semibold hover:text-forest-700 transition-colors">{{ custom_list.owner.username }}</a>
+        · {{ custom_list.created_at.strftime('%d %b %Y') }}
+        · {{ activities|length }} actividad{% if activities|length != 1 %}es{% endif %}
+      </p>
+    </div>
+  </div>
+
+  {% if activities %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {% for activity in activities %}
+      {% include 'community/_activity_card.html' %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-16 bg-white rounded-2xl border border-stone-200">
+    <div class="text-5xl mb-3">📂</div>
+    <h3 class="font-display font-bold text-stone-700 mb-1">Lista vacía</h3>
+    <p class="text-stone-400 text-sm">Todavía no hay actividades en esta lista.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

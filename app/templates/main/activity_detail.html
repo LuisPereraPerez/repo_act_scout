@@ -10,9 +10,10 @@
   </a>
 
   <article class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
-
-    <!-- Color strip -->
-    <div class="h-2 {% if activity.environment == 'exterior' %}bg-forest-500{% elif activity.environment == 'interior' %}bg-blue-400{% else %}bg-earth-500{% endif %}"></div>
+    <div class="h-2 {% if activity.environment == 'exterior' or activity.environment == 'acampada' or activity.environment == 'montana' %}bg-forest-500
+                {% elif activity.environment == 'interior' %}bg-blue-400
+                {% elif activity.environment == 'piscina' or activity.environment == 'agua' %}bg-cyan-400
+                {% else %}bg-earth-500{% endif %}"></div>
 
     <div class="p-8 sm:p-10">
 
@@ -26,22 +27,49 @@
         {% endfor %}
       </div>
 
-      <!-- Title & meta -->
-      <h1 class="font-display text-3xl font-black text-forest-900 mb-3 leading-tight">{{ activity.title }}</h1>
+      <!-- Title + actions row -->
+      <div class="flex flex-col sm:flex-row sm:items-start gap-4 mb-4">
+        <h1 class="font-display text-3xl font-black text-forest-900 leading-tight flex-1">{{ activity.title }}</h1>
 
-      <div class="flex flex-wrap items-center gap-4 text-sm text-stone-500 mb-8 pb-6 border-b border-stone-100">
+        <!-- Like button -->
+        <div class="flex items-center gap-3 shrink-0">
+          {% if current_user.is_authenticated %}
+          <form method="POST"
+                action="{{ url_for('community.toggle_like', activity_id=activity.id) }}"
+                id="like-form">
+            <input type="hidden" name="next" value="{{ request.url }}">
+            <button type="submit" id="like-btn"
+                    class="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-colors
+                           {% if current_user.has_liked(activity) %}
+                             bg-red-50 border-red-300 text-red-600 hover:bg-red-100
+                           {% else %}
+                             bg-white border-stone-200 text-stone-500 hover:bg-red-50 hover:border-red-300 hover:text-red-500
+                           {% endif %}">
+              <span id="like-icon">{% if current_user.has_liked(activity) %}❤️{% else %}🤍{% endif %}</span>
+              <span id="like-count">{{ activity.likes_count }}</span>
+            </button>
+          </form>
+          {% else %}
+          <a href="{{ url_for('auth.login') }}"
+             class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-200 text-sm font-medium text-stone-400 hover:border-red-300 hover:text-red-400 transition-colors">
+            🤍 {{ activity.likes_count }}
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Meta info grid -->
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-stone-500 mb-8 pb-6 border-b border-stone-100">
         <span class="flex items-center gap-1.5">
-          👤 Subida por <strong class="text-stone-700">{{ activity.author.username }}</strong>
+          👤 <a href="{{ url_for('community.profile', username=activity.author.username) }}"
+                class="font-semibold text-stone-700 hover:text-forest-700 transition-colors">{{ activity.author.username }}</a>
         </span>
-        <span class="flex items-center gap-1.5">
-          📅 {{ activity.created_at.strftime('%d %b %Y') }}
-        </span>
-        <span class="flex items-center gap-1.5">
-          {% if activity.environment == 'interior' %}🏠 Interior{% elif activity.environment == 'exterior' %}🌲 Exterior{% else %}↔️ Indiferente{% endif %}
-        </span>
-        <span class="flex items-center gap-1.5">
-          ⏱ {{ activity.duration_range }}
-        </span>
+        <span>📅 {{ activity.created_at.strftime('%d %b %Y') }}</span>
+        <span>{{ environments.get(activity.environment, activity.environment) }}</span>
+        <span>⏱ {{ activity.duration_range }}</span>
+        {% if activity.participants_display %}<span>👥 {{ activity.participants_display }}</span>{% endif %}
+        {% if activity.age_display %}<span>🎂 {{ activity.age_display }}</span>{% endif %}
+        {% if activity.location_detail %}<span>📍 {{ activity.location_detail }}</span>{% endif %}
       </div>
 
       <!-- Sections -->
@@ -50,33 +78,67 @@
           <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Descripción</h2>
           <div class="text-stone-600 leading-relaxed whitespace-pre-wrap">{{ activity.description }}</div>
         </section>
-
         <section>
           <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Objetivos</h2>
           <div class="text-stone-600 leading-relaxed whitespace-pre-wrap">{{ activity.objectives }}</div>
         </section>
-
         {% if activity.materials %}
         <section>
-          <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Materiales necesarios</h2>
+          <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Materiales</h2>
           <div class="text-stone-600 leading-relaxed whitespace-pre-wrap bg-stone-50 rounded-xl p-4 border border-stone-100">{{ activity.materials }}</div>
         </section>
         {% endif %}
       </div>
 
+      <!-- Attachment download -->
+      {% if activity.attachment_filename %}
+      <div class="mt-8 pt-6 border-t border-stone-100">
+        <a href="{{ url_for('main.download_attachment', activity_id=activity.id) }}"
+           class="inline-flex items-center gap-3 bg-stone-50 hover:bg-forest-50 border border-stone-200 hover:border-forest-300 rounded-xl px-5 py-3.5 transition-colors group">
+          <span class="text-2xl">{{ activity.attachment_icon }}</span>
+          <div>
+            <p class="text-sm font-semibold text-stone-700 group-hover:text-forest-800">{{ activity.attachment_original_name }}</p>
+            <p class="text-xs text-stone-400">Haz clic para descargar la ficha adjunta</p>
+          </div>
+          <span class="ml-2 text-stone-400 group-hover:text-forest-600">↓</span>
+        </a>
+      </div>
+      {% endif %}
+
     </div>
   </article>
 
-  <!-- Admin approve inline if pending -->
+  <!-- ── AÑADIR A LISTA ──────────────────────────────────── -->
+  {% if current_user.is_authenticated and current_user.custom_lists.count() > 0 %}
+  <div class="mt-4 bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
+    <h3 class="text-sm font-semibold text-stone-600 mb-3">📂 Guardar en una lista</h3>
+    <form method="POST" action="" id="add-to-list-form" class="flex gap-3">
+      <input type="hidden" name="activity_id" value="{{ activity.id }}">
+      <input type="hidden" name="next" value="{{ request.url }}">
+      <select name="_list_id" id="list-select"
+              class="flex-1 border border-stone-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-500">
+        <option value="">Selecciona una lista…</option>
+        {% for lst in current_user.custom_lists.all() %}
+        <option value="{{ lst.id }}">{% if not lst.is_public %}🔒{% else %}📂{% endif %} {{ lst.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" id="add-to-list-btn"
+              class="bg-earth-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-earth-700 transition-colors">
+        Guardar
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- Admin approve widget -->
   {% if current_user.is_authenticated and current_user.is_admin() and activity.status == 'pending' %}
-  <div class="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-4">
+  <div class="mt-4 p-5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-4">
     <div>
-      <p class="font-semibold text-amber-900 text-sm">Esta actividad está pendiente de aprobación</p>
-      <p class="text-xs text-amber-700 mt-0.5">Solo los administradores pueden verla ahora mismo.</p>
+      <p class="font-semibold text-amber-900 text-sm">Pendiente de aprobación</p>
+      <p class="text-xs text-amber-700 mt-0.5">Solo los administradores pueden verla ahora.</p>
     </div>
     <form method="POST" action="{{ url_for('admin.approve_activity', activity_id=activity.id) }}">
-      <button type="submit"
-              class="bg-forest-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-forest-900 transition-colors whitespace-nowrap">
+      <button type="submit" class="bg-forest-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-forest-900 transition-colors">
         ✓ Aprobar
       </button>
     </form>
@@ -84,4 +146,51 @@
   {% endif %}
 
 </div>
+
+<script>
+(function () {
+  const form  = document.getElementById('like-form');
+  const btn   = document.getElementById('like-btn');
+  const icon  = document.getElementById('like-icon');
+  const count = document.getElementById('like-count');
+
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    btn.disabled = true;
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest',
+                   'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form)),
+      });
+      const data = await res.json();
+      icon.textContent = data.liked ? '❤️' : '🤍';
+      count.textContent = data.count;
+      btn.className = btn.className.replace(
+        data.liked
+          ? /bg-white border-stone-200 text-stone-500 hover:bg-red-50 hover:border-red-300 hover:text-red-500/
+          : /bg-red-50 border-red-300 text-red-600 hover:bg-red-100/,
+        data.liked
+          ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100'
+          : 'bg-white border-stone-200 text-stone-500 hover:bg-red-50 hover:border-red-300 hover:text-red-500'
+      );
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  const addForm   = document.getElementById('add-to-list-form');
+  const listSelect = document.getElementById('list-select');
+  if (addForm && listSelect) {
+    addForm.addEventListener('submit', function (e) {
+      const val = listSelect.value;
+      if (!val) { e.preventDefault(); return; }
+      addForm.action = `/comunidad/listas/${val}/agregar`;
+    });
+  }
+})();
+</script>
 {% endblock %}
