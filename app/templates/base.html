@@ -1,120 +1,97 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}ScoutRepo{% endblock %} — Repositorio Scout</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            forest: { 50:'#f0fdf4', 100:'#dcfce7', 500:'#22c55e', 700:'#15803d', 900:'#14532d' },
-            earth:  { 50:'#fefce8', 100:'#fef9c3', 500:'#eab308', 700:'#a16207', 900:'#713f12' },
-            bark:   { 50:'#fdf8f6', 100:'#f2e8e5', 500:'#a16046', 700:'#7c4a32', 900:'#4a2c1a' },
-          },
-          fontFamily: {
-            display: ['"Merriweather"', 'Georgia', 'serif'],
-            body: ['"Inter"', 'system-ui', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    h1, h2, .font-display { font-family: 'Merriweather', Georgia, serif; }
-    .nav-link { @apply text-sm font-medium text-stone-600 hover:text-forest-700 transition-colors; }
-    .badge-env-interior  { @apply bg-blue-100 text-blue-800; }
-    .badge-env-exterior  { @apply bg-green-100 text-green-800; }
-    .badge-env-indiferente { @apply bg-stone-100 text-stone-600; }
-  </style>
-  {% block head %}{% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Actividades Scout{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-stone-50 text-stone-800 min-h-screen flex flex-col">
+<body class="min-h-screen bg-slate-100 font-sans antialiased text-slate-800 flex flex-col">
 
-  <!-- NAVBAR -->
-  <nav class="bg-white border-b border-stone-200 sticky top-0 z-40 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-md shadow-slate-900/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                
+                <div class="flex items-center">
+                    <a href="{{ url_for('main.index') }}" class="flex items-center space-x-2.5 font-bold text-xl tracking-wide text-white group">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-compass text-lg"></i>
+                        </div>
+                        <span class="hover:text-emerald-400 transition-colors">ScoutAct</span>
+                    </a>
+                </div>
 
-        <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 group">
-          <span class="text-2xl">⚜️</span>
-          <span class="font-display font-bold text-forest-900 text-lg group-hover:text-forest-700 transition-colors">ScoutRepo</span>
-        </a>
+                <div class="flex items-center space-x-1 sm:space-x-2">
+                    <a href="{{ url_for('main.index') }}" class="flex items-center space-x-1.5 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-xl transition-all">
+                        <i class="fa-solid fa-house text-slate-400"></i>
+                        <span class="hidden sm:inline">Inicio</span>
+                    </a>
 
-        <div class="flex items-center gap-6">
-          <a href="{{ url_for('main.index') }}" class="nav-link">Explorar</a>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('main.upload_activity') }}" class="flex items-center space-x-1.5 text-sm font-semibold text-emerald-950 bg-emerald-400 hover:bg-emerald-350 px-3 py-2 rounded-xl transition-all shadow-sm shadow-emerald-900/20">
+                            <i class="fa-solid fa-square-plus text-emerald-900"></i>
+                            <span class="hidden sm:inline">Subir Actividad</span>
+                        </a>
+                        
+                        {% if current_user.is_admin() %}
+                            <a href="{{ url_for('admin.panel') }}" class="flex items-center space-x-1.5 text-sm font-medium text-amber-400 hover:bg-slate-800 px-3 py-2 rounded-xl transition-all">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span class="hidden sm:inline">Admin</span>
+                            </a>
+                        {% endif %}
 
-          {% if current_user.is_authenticated %}
-            <a href="{{ url_for('main.upload_activity') }}" class="nav-link">Subir actividad</a>
-            {% if current_user.is_admin() %}
-              <a href="{{ url_for('admin.panel') }}"
-                 class="flex items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-900 transition-colors">
-                 <span>Panel Admin</span>
-                 <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2 py-0.5 rounded-full">Admin</span>
-              </a>
-            {% endif %}
-            <div class="flex items-center gap-3 pl-3 border-l border-stone-200">
-              <a href="{{ url_for('community.profile', username=current_user.username) }}"
-                 class="flex items-center gap-2 text-sm font-semibold text-stone-700 hover:text-forest-700 transition-colors">
-                <span class="w-7 h-7 rounded-lg bg-forest-700 text-white flex items-center justify-center text-xs font-black">{{ current_user.username[0].upper() }}</span>
-                {{ current_user.username }}
-              </a>
-              <a href="{{ url_for('auth.logout') }}"
-                 class="text-sm font-medium text-stone-400 hover:text-red-500 transition-colors">Salir</a>
+                        <span class="h-5 w-px bg-slate-800 mx-1 hidden sm:block"></span>
+
+                        <a href="{{ url_for('community.profile', username=current_user.username) }}" class="flex items-center space-x-2 text-sm font-medium text-slate-300 hover:text-white p-1 sm:px-2 sm:py-1 rounded-xl transition-all" title="Mi Perfil">
+                            <div class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400 font-semibold text-xs shrink-0">
+                                {{ current_user.username[0] | upper }}
+                            </div>
+                            <span class="hidden md:inline max-w-[100px] truncate text-slate-300">{{ current_user.username }}</span>
+                        </a>
+
+                        <a href="{{ url_for('auth.logout') }}" class="text-slate-400 hover:text-rose-400 hover:bg-slate-800 p-2 rounded-xl transition-all" title="Cerrar sesión">
+                            <i class="fa-solid fa-right-from-bracket text-base"></i>
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="text-sm font-medium text-slate-300 hover:text-white px-3 py-2 transition-colors">
+                            Ingresar
+                        </a>
+                        <a href="{{ url_for('auth.register') }}" class="text-sm font-medium text-slate-900 bg-white hover:bg-slate-100 px-4 py-2 rounded-xl font-medium transition-all shadow-sm">
+                            Registrarse
+                        </a>
+                    {% endif %}
+                </div>
+
             </div>
-          {% else %}
-            <div class="flex items-center gap-3">
-              <a href="{{ url_for('auth.login') }}"
-                 class="text-sm font-medium text-stone-600 hover:text-forest-700 transition-colors">Iniciar sesión</a>
-              <a href="{{ url_for('auth.register') }}"
-                 class="bg-forest-700 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-forest-900 transition-colors">
-                 Registrarse
-              </a>
-            </div>
-          {% endif %}
+        </div>
+    </nav>
+
+    <div class="w-full flex-grow">
+        
+        <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-2xl flex items-center space-x-3 border bg-white shadow-sm {% if category == 'error' %}text-rose-700 border-rose-100 bg-rose-50/50{% else %}text-emerald-700 border-emerald-100 bg-emerald-50/50{% endif %}" role="alert">
+                            <i class="fa-solid {% if category == 'error' %}fa-circle-xmark text-rose-500{% else %}fa-circle-check text-emerald-500{% endif %} text-lg shrink-0"></i>
+                            <span class="text-sm font-medium">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </div>
 
-      </div>
+        <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 pb-12">
+            {% block content %}{% endblock %}
+        </main>
     </div>
-  </nav>
 
-  <!-- FLASH MESSAGES -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 w-full">
-        {% for category, message in messages %}
-          <div class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 text-sm font-medium
-            {% if category == 'error' %} bg-red-50 text-red-800 border border-red-200
-            {% elif category == 'success' %} bg-forest-50 text-forest-800 border border-forest-200
-            {% else %} bg-blue-50 text-blue-800 border border-blue-200 {% endif %}">
-            <span>{% if category == 'error' %}⚠️{% elif category == 'success' %}✅{% else %}ℹ️{% endif %}</span>
-            <span>{{ message }}</span>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-
-  <!-- MAIN CONTENT -->
-  <main class="flex-1">
-    {% block content %}{% endblock %}
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="border-t border-stone-200 bg-white mt-16">
-    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-2 text-stone-500 text-sm">
-        <span>⚜️</span>
-        <span><strong class="text-stone-700">ScoutRepo</strong> — Repositorio de actividades scouts</span>
-      </div>
-      <p class="text-xs text-stone-400">Hecho por y para scouters. Compartir es la base del movimiento.</p>
-    </div>
-  </footer>
+    <footer class="bg-slate-950 border-t border-slate-900 py-6 text-slate-500 mt-auto w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs">
+            &copy; 2026 ScoutAct. Desarrollado para Grupos Scouts.
+        </div>
+    </footer>
 
 </body>
 </html>

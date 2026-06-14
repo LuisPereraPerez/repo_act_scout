@@ -2,149 +2,276 @@
 {% block title %}{{ activity.title }}{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="w-full">
 
-  <a href="{{ url_for('main.index') }}"
-     class="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-forest-700 transition-colors mb-6">
-     ← Volver al explorador
-  </a>
+  <!-- BOTÓN VOLVER ATRÁS -->
+  <div class="mb-4">
+    <a href="{{ url_for('main.index') }}"
+       class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-600 transition-colors group">
+       <i class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-0.5"></i>
+       Volver al explorador
+    </a>
+  </div>
 
-  <article class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
-    <div class="h-2 {% if activity.environment == 'exterior' or activity.environment == 'acampada' or activity.environment == 'montana' %}bg-forest-500
-                {% elif activity.environment == 'interior' %}bg-blue-400
-                {% elif activity.environment == 'piscina' or activity.environment == 'agua' %}bg-cyan-400
-                {% else %}bg-earth-500{% endif %}"></div>
+  <!-- DISEÑO EN DOS COLUMNAS -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-    <div class="p-8 sm:p-10">
+    <!-- COLUMNA IZQUIERDA: CONTENIDO DE LA ACTIVIDAD -->
+    <div class="lg:col-span-2 space-y-4">
+      
+      <!-- Panel de Título y Botón Me Gusta -->
+      <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="h-1.5 {% if activity.environment == 'exterior' or activity.environment == 'acampada' or activity.environment == 'montana' %}bg-emerald-500
+                    {% elif activity.environment == 'interior' %}bg-sky-400
+                    {% elif activity.environment == 'piscina' or activity.environment == 'agua' %}bg-cyan-400
+                    {% else %}bg-amber-500{% endif %}"></div>
 
-      <!-- Badges -->
-      <div class="flex flex-wrap gap-2 mb-5">
-        {% for cat in activity.categories %}
-        <span class="bg-forest-50 text-forest-800 text-xs font-semibold px-3 py-1 rounded-full border border-forest-200">{{ cat.name }}</span>
-        {% endfor %}
-        {% for unit in activity.units %}
-        <span class="bg-earth-50 text-earth-700 text-xs font-semibold px-3 py-1 rounded-full border border-earth-200">{{ unit.name }}</span>
-        {% endfor %}
-      </div>
+        <div class="p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row sm:items-start gap-4 justify-between">
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 leading-tight flex-1">
+              {{ activity.title }}
+            </h1>
 
-      <!-- Title + actions row -->
-      <div class="flex flex-col sm:flex-row sm:items-start gap-4 mb-4">
-        <h1 class="font-display text-3xl font-black text-forest-900 leading-tight flex-1">{{ activity.title }}</h1>
+            <!-- Botón Like -->
+            <div class="flex items-center gap-3 shrink-0">
+              {% if current_user.is_authenticated %}
+              <form method="POST" action="{{ url_for('community.toggle_like', activity_id=activity.id) }}" id="like-form">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <button type="submit" id="like-btn"
+                        class="flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold transition-all
+                               {% if current_user.has_liked(activity) %}
+                                 bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100
+                               {% else %}
+                                 bg-white border-slate-200 text-slate-500 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-500
+                               {% endif %}">
+                  <span id="like-icon" class="text-sm">{% if current_user.has_liked(activity) %}❤️{% else %}🤍{% endif %}</span>
+                  <span id="like-count">{{ activity.likes_count }}</span>
+                </button>
+              </form>
+              {% else %}
+              <a href="{{ url_for('auth.login') }}"
+                 class="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-400 hover:border-rose-200 hover:text-rose-500 transition-colors bg-white">
+                🤍 {{ activity.likes_count }}
+              </a>
+              {% endif %}
+            </div>
+          </div>
 
-        <!-- Like button -->
-        <div class="flex items-center gap-3 shrink-0">
-          {% if current_user.is_authenticated %}
-          <form method="POST"
-                action="{{ url_for('community.toggle_like', activity_id=activity.id) }}"
-                id="like-form">
-            <input type="hidden" name="next" value="{{ request.url }}">
-            <button type="submit" id="like-btn"
-                    class="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-colors
-                           {% if current_user.has_liked(activity) %}
-                             bg-red-50 border-red-300 text-red-600 hover:bg-red-100
-                           {% else %}
-                             bg-white border-stone-200 text-stone-500 hover:bg-red-50 hover:border-red-300 hover:text-red-500
-                           {% endif %}">
-              <span id="like-icon">{% if current_user.has_liked(activity) %}❤️{% else %}🤍{% endif %}</span>
-              <span id="like-count">{{ activity.likes_count }}</span>
-            </button>
-          </form>
-          {% else %}
-          <a href="{{ url_for('auth.login') }}"
-             class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-200 text-sm font-medium text-stone-400 hover:border-red-300 hover:text-red-400 transition-colors">
-            🤍 {{ activity.likes_count }}
-          </a>
-          {% endif %}
+          <!-- Autor, Fecha y Grupo Scout con la Flor de Lis Scout -->
+          <div class="flex items-center space-x-3 mt-4 pt-4 border-t border-slate-100">
+            <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-bold text-sm shrink-0">
+              {{ activity.author.username[0] | upper }}
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Creado por</p>
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
+                <a href="{{ url_for('community.profile', username=activity.author.username) }}" class="font-bold text-slate-700 hover:text-emerald-600 transition-colors">
+                  {{ activity.author.username }}
+                </a>
+                
+                <span class="text-slate-300">•</span>
+                <span class="text-slate-500 text-xs font-medium">{{ activity.created_at.strftime('%d %b %Y') }}</span>
+                
+                <!-- SECCIÓN DEL GRUPO SCOUT CON LA FLOR DE LIS SVG VECTORIAL -->
+                {% if activity.author.grupo_scout %}
+                  <span class="text-slate-300">•</span>
+                  <span class="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-semibold bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-lg">
+                    <span>Grupo Scout: <strong class="font-bold">{{ activity.author.grupo_scout }}</strong></span>
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
         </div>
-      </div>
+      </article>
 
-      <!-- Meta info grid -->
-      <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-stone-500 mb-8 pb-6 border-b border-stone-100">
-        <span class="flex items-center gap-1.5">
-          👤 <a href="{{ url_for('community.profile', username=activity.author.username) }}"
-                class="font-semibold text-stone-700 hover:text-forest-700 transition-colors">{{ activity.author.username }}</a>
-        </span>
-        <span>📅 {{ activity.created_at.strftime('%d %b %Y') }}</span>
-        <span>{{ environments.get(activity.environment, activity.environment) }}</span>
-        <span>⏱ {{ activity.duration_range }}</span>
-        {% if activity.participants_display %}<span>👥 {{ activity.participants_display }}</span>{% endif %}
-        {% if activity.age_display %}<span>🎂 {{ activity.age_display }}</span>{% endif %}
-        {% if activity.location_detail %}<span>📍 {{ activity.location_detail }}</span>{% endif %}
-      </div>
+      <!-- Secciones de Texto Principal -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+        <section>
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-align-left text-slate-300"></i> Descripción
+          </h2>
+          <div class="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{{ activity.description }}</div>
+        </section>
 
-      <!-- Sections -->
-      <div class="space-y-7">
-        <section>
-          <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Descripción</h2>
-          <div class="text-stone-600 leading-relaxed whitespace-pre-wrap">{{ activity.description }}</div>
+        <section class="pt-4 border-t border-slate-100">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-slate-300"></i> Objetivos
+          </h2>
+          <div class="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{{ activity.objectives }}</div>
         </section>
-        <section>
-          <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Objetivos</h2>
-          <div class="text-stone-600 leading-relaxed whitespace-pre-wrap">{{ activity.objectives }}</div>
-        </section>
+
+        <!-- Bloque de Materiales con mayúscula SOLO en la primera letra general -->
         {% if activity.materials %}
-        <section>
-          <h2 class="font-display text-lg font-bold text-stone-800 mb-2">Materiales</h2>
-          <div class="text-stone-600 leading-relaxed whitespace-pre-wrap bg-stone-50 rounded-xl p-4 border border-stone-100">{{ activity.materials }}</div>
+        <section class="pt-4 border-t border-slate-100">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-toolbox text-slate-300"></i> Materiales necesarios
+          </h2>
+          <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 border border-slate-200/60 rounded-xl p-4">
+            {% for item in activity.materials.split(',') %}
+              {% if item|trim %}
+                <li class="flex items-center space-x-2 text-sm text-slate-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                  <span class="first-letter:uppercase normal-case">{{ item|trim }}</span>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
         </section>
         {% endif %}
       </div>
 
-      <!-- Attachment download -->
-      {% if activity.attachment_filename %}
-      <div class="mt-8 pt-6 border-t border-stone-100">
-        <a href="{{ url_for('main.download_attachment', activity_id=activity.id) }}"
-           class="inline-flex items-center gap-3 bg-stone-50 hover:bg-forest-50 border border-stone-200 hover:border-forest-300 rounded-xl px-5 py-3.5 transition-colors group">
-          <span class="text-2xl">{{ activity.attachment_icon }}</span>
-          <div>
-            <p class="text-sm font-semibold text-stone-700 group-hover:text-forest-800">{{ activity.attachment_original_name }}</p>
-            <p class="text-xs text-stone-400">Haz clic para descargar la ficha adjunta</p>
+    </div>
+
+    <!-- COLUMNA DERECHA: FICHA TÉCNICA -->
+    <div class="space-y-4">
+      
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3.5">Ficha Técnica</h3>
+        
+        <div class="space-y-3.5">
+
+          <div class="py-1 border-b border-slate-100/60">
+            <span class="text-slate-500 flex items-center gap-2 text-xs font-medium mb-2">
+              <i class="fa-solid fa-people-group text-slate-400 w-4 text-center"></i> Secciones
+            </span>
+            <div class="flex flex-wrap gap-1">
+              {% for unit in activity.units %}
+                <span class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-slate-200">{{ unit.name }}</span>
+              {% endfor %}
+            </div>
           </div>
-          <span class="ml-2 text-stone-400 group-hover:text-forest-600">↓</span>
-        </a>
+
+          <div class="py-1 border-b border-slate-100/60">
+            <span class="text-slate-500 flex items-center gap-2 text-xs font-medium mb-2">
+              <i class="fa-solid fa-tags text-slate-400 w-4 text-center"></i> Tipo de juego
+            </span>
+            <div class="flex flex-wrap gap-1">
+              {% for cat in activity.categories %}
+                <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-emerald-100">{{ cat.name }}</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-sm py-1 border-b border-slate-100/60">
+            <span class="text-slate-500 flex items-center gap-2 text-xs font-medium">
+              <i class="fa-solid fa-tree text-slate-400 w-4 text-center"></i> Entorno
+            </span>
+            <span class="font-semibold text-slate-800 text-xs">
+              {{ environments.get(activity.environment, activity.environment) | capitalize }}
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between text-sm py-1 border-b border-slate-100/60">
+            <span class="text-slate-500 flex items-center gap-2 text-xs font-medium">
+              <i class="fa-solid fa-clock text-slate-400 w-4 text-center"></i> Duración
+            </span>
+            <span class="font-semibold text-slate-800 text-xs">
+              ⏱ {{ activity.duration_range }}
+            </span>
+          </div>
+
+          {% if activity.participants_display %}
+          <div class="flex items-center justify-between text-sm py-1 border-b border-slate-100/60">
+            <span class="text-slate-500 flex items-center gap-2 text-xs font-medium">
+              <i class="fa-solid fa-users text-slate-400 w-4 text-center"></i> Participantes
+            </span>
+            <span class="font-semibold text-slate-800 text-xs">
+              {{ activity.participants_display }}
+            </span>
+          </div>
+          {% endif %}
+
+          {% if activity.age_display %}
+          <div class="flex items-center justify-between text-sm py-1 border-b border-slate-100/60">
+            <span class="text-slate-500 flex items-center gap-2 text-xs font-medium">
+              <i class="fa-solid fa-cake-candles text-slate-400 w-4 text-center"></i> Edad
+            </span>
+            <span class="font-semibold text-slate-800 text-xs">
+              {{ activity.age_display }}
+            </span>
+          </div>
+          {% endif %}
+
+          {% if activity.location_detail %}
+          <div class="flex items-center justify-between text-sm py-1 border-b border-slate-100/60">
+            <span class="text-slate-500 flex items-center gap-2 text-xs font-medium">
+              <i class="fa-solid fa-location-dot text-slate-400 w-4 text-center"></i> Ubicación
+            </span>
+            <span class="font-semibold text-slate-800 text-xs truncate max-w-[140px]" title="{{ activity.location_detail }}">
+              {{ activity.location_detail }}
+            </span>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+
+      <!-- Descarga de Archivos Adjuntos -->
+      {% if activity.attachment_filename %}
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 shadow-sm">
+        <div class="flex items-start gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shrink-0 shadow-sm shadow-emerald-200">
+            <i class="fa-solid fa-file-pdf text-base"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-bold text-emerald-950 uppercase tracking-wider">Ficha adjunta</h4>
+            <p class="text-[11px] text-emerald-700 mt-0.5 truncate font-medium">{{ activity.attachment_original_name }}</p>
+            <a href="{{ url_for('main.download_attachment', activity_id=activity.id) }}"
+               class="mt-3 flex items-center justify-center gap-2 w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2 px-3 rounded-xl shadow-sm transition-colors group">
+              <i class="fa-solid fa-cloud-arrow-down"></i>
+              <span>Descargar recurso</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Guardar en una lista -->
+      {% if current_user.is_authenticated and current_user.custom_lists.count() > 0 %}
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-folder-plus text-slate-300"></i> Guardar en una lista
+        </h3>
+        <form method="POST" action="" id="add-to-list-form" class="flex flex-col gap-2">
+          <input type="hidden" name="activity_id" value="{{ activity.id }}">
+          <input type="hidden" name="next" value="{{ request.url }}">
+          <select name="_list_id" id="list-select"
+                  class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+            <option value="">Selecciona una lista…</option>
+            {% for lst in current_user.custom_lists.all() %}
+            <option value="{{ lst.id }}">{% if not lst.is_public %}🔒{% else %}📂{% endif %} {{ lst.name }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" id="add-to-list-btn"
+                  class="w-full bg-slate-900 text-white text-xs font-semibold py-2 px-4 rounded-xl hover:bg-slate-800 transition-colors shadow-sm">
+            Guardar dinámica
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+      <!-- Administradores -->
+      {% if current_user.is_authenticated and current_user.is_admin() and activity.status == 'pending' %}
+      <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col gap-3 shadow-sm">
+        <div>
+          <p class="font-bold text-amber-900 text-xs uppercase tracking-wide flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-exclamation text-amber-500"></i> Revisión Pendiente
+          </p>
+          <p class="text-[11px] text-amber-700 mt-0.5">Visible únicamente para el equipo de administración.</p>
+        </div>
+        <form method="POST" action="{{ url_for('admin.approve_activity', activity_id=activity.id) }}" class="w-full">
+          <button type="submit" class="w-full bg-amber-600 text-white text-xs font-bold py-2 px-4 rounded-xl hover:bg-amber-700 transition-colors shadow-sm shadow-amber-200">
+            ✓ Aprobar Actividad
+          </button>
+        </form>
       </div>
       {% endif %}
 
     </div>
-  </article>
 
-  <!-- ── AÑADIR A LISTA ──────────────────────────────────── -->
-  {% if current_user.is_authenticated and current_user.custom_lists.count() > 0 %}
-  <div class="mt-4 bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
-    <h3 class="text-sm font-semibold text-stone-600 mb-3">📂 Guardar en una lista</h3>
-    <form method="POST" action="" id="add-to-list-form" class="flex gap-3">
-      <input type="hidden" name="activity_id" value="{{ activity.id }}">
-      <input type="hidden" name="next" value="{{ request.url }}">
-      <select name="_list_id" id="list-select"
-              class="flex-1 border border-stone-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-500">
-        <option value="">Selecciona una lista…</option>
-        {% for lst in current_user.custom_lists.all() %}
-        <option value="{{ lst.id }}">{% if not lst.is_public %}🔒{% else %}📂{% endif %} {{ lst.name }}</option>
-        {% endfor %}
-      </select>
-      <button type="submit" id="add-to-list-btn"
-              class="bg-earth-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-earth-700 transition-colors">
-        Guardar
-      </button>
-    </form>
   </div>
-  {% endif %}
-
-  <!-- Admin approve widget -->
-  {% if current_user.is_authenticated and current_user.is_admin() and activity.status == 'pending' %}
-  <div class="mt-4 p-5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-4">
-    <div>
-      <p class="font-semibold text-amber-900 text-sm">Pendiente de aprobación</p>
-      <p class="text-xs text-amber-700 mt-0.5">Solo los administradores pueden verla ahora.</p>
-    </div>
-    <form method="POST" action="{{ url_for('admin.approve_activity', activity_id=activity.id) }}">
-      <button type="submit" class="bg-forest-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-forest-900 transition-colors">
-        ✓ Aprobar
-      </button>
-    </form>
-  </div>
-  {% endif %}
-
 </div>
 
 <script>
@@ -171,11 +298,11 @@
       count.textContent = data.count;
       btn.className = btn.className.replace(
         data.liked
-          ? /bg-white border-stone-200 text-stone-500 hover:bg-red-50 hover:border-red-300 hover:text-red-500/
-          : /bg-red-50 border-red-300 text-red-600 hover:bg-red-100/,
+          ? /bg-white border-slate-200 text-slate-500 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-500/
+          : /bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100/,
         data.liked
-          ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100'
-          : 'bg-white border-stone-200 text-stone-500 hover:bg-red-50 hover:border-red-300 hover:text-red-500'
+          ? 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100'
+          : 'bg-white border-slate-200 text-slate-500 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-500'
       );
     } finally {
       btn.disabled = false;

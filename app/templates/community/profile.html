@@ -2,42 +2,50 @@
 {% block title %}Perfil de {{ profile_user.username }}{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="w-full">
 
-  <!-- ── CABECERA DE PERFIL ─────────────────────────────── -->
-  <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden mb-6">
-    <!-- Banner decorativo -->
-    <div class="h-24 bg-gradient-to-r from-forest-700 via-forest-600 to-earth-500"></div>
+  <!-- ── CABECERA DE PERFIL CORREGIDA ─────────────────────────────── -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-5">
+    <!-- Banner decorativo con degradado esmeralda -->
+    <div class="h-28 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 relative"></div>
 
-    <div class="px-7 pb-7">
-      <!-- Avatar + acciones -->
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 -mt-8 mb-5">
-        <div class="flex items-end gap-4">
-          <!-- Avatar generado con iniciales -->
-          <div class="w-20 h-20 rounded-2xl border-4 border-white shadow-md bg-forest-700 flex items-center justify-center shrink-0">
-            <span class="text-white font-display font-black text-2xl">
+    <div class="px-5 pb-5 sm:px-6 sm:pb-6">
+      <!-- Avatar + acciones y textos alineados limpiamente -->
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 -mt-12 mb-6">
+        
+        <div class="flex items-center gap-4">
+          <!-- Avatar con borde blanco grueso para resaltar sobre el degradado -->
+          <div class="w-20 h-20 rounded-2xl border-4 border-white shadow-md bg-emerald-600 flex items-center justify-center shrink-0 z-10">
+            <span class="text-white font-bold text-2xl tracking-tight">
               {{ profile_user.username[0].upper() }}
             </span>
           </div>
-          <div class="pb-1">
-            <h1 class="font-display text-2xl font-black text-stone-900">{{ profile_user.username }}</h1>
+          
+          <!-- Bloque de textos con distribución vertical limpia para evitar solapamientos -->
+          <div class="flex flex-col pt-12 sm:pt-14">
+            <h1 class="text-2xl font-black tracking-tight text-slate-900 leading-tight">
+              {{ profile_user.username }}
+            </h1>
             {% if profile_user.grupo_scout %}
-            <p class="text-sm text-stone-500 flex items-center gap-1.5 mt-0.5">
-              <span>⚜️</span> {{ profile_user.grupo_scout }}
-            </p>
+            <div class="mt-1.5">
+              <span class="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-lg shadow-sm">
+                <span>Grupo Scout: <strong class="font-bold">{{ profile_user.grupo_scout }}</strong></span>
+              </span>
+            </div>
             {% endif %}
           </div>
         </div>
 
-        <div class="flex items-center gap-3 pb-1">
+        <!-- Botones de Redes y Editar alineados arriba a la derecha -->
+        <div class="flex items-center gap-3 pt-2 sm:pt-14 justify-between sm:justify-end w-full sm:w-auto">
           {% set ig = profile_user.get_social('instagram') %}
           {% set tt = profile_user.get_social('tiktok') %}
           {% set xh = profile_user.get_social('x') %}
           {% if ig or tt or xh %}
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2.5">
             {% if ig %}
             <a href="https://instagram.com/{{ ig }}" target="_blank" title="@{{ ig }}"
-               class="text-stone-400 hover:text-pink-500 transition-colors">
+               class="text-slate-400 hover:text-pink-500 transition-colors">
               <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
               </svg>
@@ -45,7 +53,7 @@
             {% endif %}
             {% if tt %}
             <a href="https://tiktok.com/@{{ tt }}" target="_blank" title="@{{ tt }}"
-               class="text-stone-400 hover:text-stone-900 transition-colors">
+               class="text-slate-400 hover:text-slate-900 transition-colors">
               <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
                 <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.28 8.28 0 0 0 4.83 1.54V6.78a4.85 4.85 0 0 1-1.06-.09z"/>
               </svg>
@@ -53,7 +61,7 @@
             {% endif %}
             {% if xh %}
             <a href="https://x.com/{{ xh }}" target="_blank" title="@{{ xh }}"
-               class="text-stone-400 hover:text-stone-900 transition-colors">
+               class="text-slate-400 hover:text-slate-900 transition-colors">
               <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.258 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
               </svg>
@@ -61,50 +69,53 @@
             {% endif %}
           </div>
           {% endif %}
+          
           {% if is_own %}
           <a href="{{ url_for('community.edit_profile', username=profile_user.username) }}"
-             class="flex items-center gap-2 text-sm font-semibold text-stone-600 hover:text-forest-700 border border-stone-200 hover:border-forest-300 px-4 py-2 rounded-xl transition-colors">
-            ✏️ Editar perfil
+             class="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-emerald-600 border border-slate-200 hover:border-emerald-200 bg-white px-3 py-2 rounded-xl transition-all shadow-sm">
+            <i class="fa-solid fa-user-pen"></i> Editar perfil
           </a>
           {% endif %}
         </div>
+
       </div>
 
       <!-- Estadísticas -->
       <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
-        <div class="text-center bg-stone-50 rounded-xl py-3 px-2">
-          <p class="font-display text-2xl font-black text-forest-800">{{ uploaded|length }}</p>
-          <p class="text-xs text-stone-500 mt-0.5">Actividades</p>
+        <div class="text-center bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-2">
+          <p class="text-xl font-bold text-emerald-700 leading-tight">{{ uploaded|length }}</p>
+          <p class="text-[10px] font-semibold text-slate-400 mt-0.5 uppercase tracking-wide">Actividades</p>
         </div>
-        <div class="text-center bg-stone-50 rounded-xl py-3 px-2">
-          <p class="font-display text-2xl font-black text-red-500">{{ liked|length }}</p>
-          <p class="text-xs text-stone-500 mt-0.5">Me gusta</p>
+        <div class="text-center bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-2">
+          <p class="text-xl font-bold text-rose-500 leading-tight">{{ liked|length }}</p>
+          <p class="text-[10px] font-semibold text-slate-400 mt-0.5 uppercase tracking-wide">Me gusta</p>
         </div>
-        <div class="text-center bg-stone-50 rounded-xl py-3 px-2">
-          <p class="font-display text-2xl font-black text-earth-700">{{ custom_lists|length }}</p>
-          <p class="text-xs text-stone-500 mt-0.5">Listas</p>
+        <div class="text-center bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-2">
+          <p class="text-xl font-bold text-slate-700 leading-tight">{{ custom_lists|length }}</p>
+          <p class="text-[10px] font-semibold text-slate-400 mt-0.5 uppercase tracking-wide">Listas</p>
         </div>
         {% if is_own and pending_count > 0 %}
-        <div class="text-center bg-amber-50 rounded-xl py-3 px-2 border border-amber-200">
-          <p class="font-display text-2xl font-black text-amber-700">{{ pending_count }}</p>
-          <p class="text-xs text-amber-600 mt-0.5">Pendientes</p>
+        <div class="text-center bg-amber-50 border border-amber-200 rounded-xl py-2.5 px-2">
+          <p class="text-xl font-bold text-amber-700 leading-tight">{{ pending_count }}</p>
+          <p class="text-[10px] font-semibold text-amber-600 mt-0.5 uppercase tracking-wide">Pendientes</p>
         </div>
         {% endif %}
       </div>
+
     </div>
   </div>
 
-  <!-- ── PESTAÑAS ─────────────────────────────────────────── -->
-  <div class="flex gap-1 bg-stone-100 p-1 rounded-xl mb-6 w-fit">
+  <!-- ── PESTAÑAS (TABS INTERACTIVOS) ─────────────────────── -->
+  <div class="flex gap-1 bg-slate-100 border border-slate-200/40 p-1 rounded-xl mb-5 w-fit shadow-inner">
     {% for t, label, emoji in [('actividades','Actividades','📋'), ('likes','Me gusta','❤️'), ('listas','Mis listas','📂')] %}
     <a href="{{ url_for('community.profile', username=profile_user.username, tab=t) }}"
-       class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-colors
-              {% if tab == t %}bg-white text-forest-900 shadow-sm{% else %}text-stone-500 hover:text-stone-700{% endif %}">
-      <span>{{ emoji }}</span> {{ label }}
+       class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all
+              {% if tab == t %}bg-white text-slate-900 shadow-sm border border-slate-200/40{% else %}text-slate-500 hover:text-slate-800{% endif %}">
+      <span>{{ emoji }}</span> <span>{{ label }}</span>
       {% if t == 'actividades' and uploaded|length %}
-        <span class="{% if tab == t %}bg-forest-100 text-forest-700{% else %}bg-stone-200 text-stone-500{% endif %} text-xs font-bold px-1.5 py-0.5 rounded-full">{{ uploaded|length }}</span>
+        <span class="{% if tab == t %}bg-emerald-100 text-emerald-700{% else %}bg-slate-200 text-slate-500{% endif %} text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-0.5">{{ uploaded|length }}</span>
       {% elif t == 'likes' and liked|length %}
-        <span class="{% if tab == t %}bg-red-100 text-red-600{% else %}bg-stone-200 text-stone-500{% endif %} text-xs font-bold px-1.5 py-0.5 rounded-full">{{ liked|length }}</span>
+        <span class="{% if tab == t %}bg-rose-100 text-rose-600{% else %}bg-slate-200 text-slate-500{% endif %} text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-0.5">{{ liked|length }}</span>
       {% endif %}
     </a>
     {% endfor %}
@@ -113,22 +124,22 @@
   <!-- ── TAB: ACTIVIDADES ──────────────────────────────────── -->
   {% if tab == 'actividades' %}
     {% if uploaded %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {% for activity in uploaded %}
         {% include 'community/_activity_card.html' %}
       {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-16 bg-white rounded-2xl border border-stone-200">
-      <div class="text-5xl mb-3">🧭</div>
-      <h3 class="font-display font-bold text-stone-700 mb-1">Sin actividades aún</h3>
-      <p class="text-stone-400 text-sm mb-5">
-        {% if is_own %}Comparte tu primera actividad con la comunidad.
+    <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm px-4">
+      <div class="text-4xl mb-3">🧭</div>
+      <h3 class="text-sm font-bold text-slate-700 mb-1">Sin actividades aún</h3>
+      <p class="text-slate-400 text-xs mb-4">
+        {% if is_own %}Comparte tu primera actividad con la comunidad scout.
         {% else %}Este scouter todavía no ha publicado actividades.{% endif %}
       </p>
       {% if is_own %}
       <a href="{{ url_for('main.upload_activity') }}"
-         class="inline-block bg-forest-700 text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-forest-900 transition-colors">
+         class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-colors shadow-sm">
          Subir actividad
       </a>
       {% endif %}
@@ -138,16 +149,16 @@
   <!-- ── TAB: LIKES ───────────────────────────────────────── -->
   {% elif tab == 'likes' %}
     {% if liked %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {% for activity in liked %}
         {% include 'community/_activity_card.html' %}
       {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-16 bg-white rounded-2xl border border-stone-200">
-      <div class="text-5xl mb-3">❤️</div>
-      <h3 class="font-display font-bold text-stone-700 mb-1">Sin actividades favoritas</h3>
-      <p class="text-stone-400 text-sm">
+    <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm px-4">
+      <div class="text-4xl mb-3">❤️</div>
+      <h3 class="text-sm font-bold text-slate-700 mb-1">Sin actividades favoritas</h3>
+      <p class="text-slate-400 text-xs">
         {% if is_own %}Dale ❤️ a las actividades que más te gusten mientras las exploras.
         {% else %}Este scouter todavía no tiene favoritas.{% endif %}
       </p>
@@ -159,24 +170,26 @@
 
     {% if is_own %}
     <!-- Crear lista -->
-    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 mb-6">
-      <h3 class="font-display font-bold text-stone-700 mb-4">Nueva lista</h3>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 mb-5">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+        <i class="fa-solid fa-folder-plus text-slate-300"></i> Nueva lista de actividades
+      </h3>
       <form method="POST" action="{{ url_for('community.create_list') }}" class="space-y-3">
-        <div class="flex gap-3">
+        <div class="flex flex-col sm:flex-row gap-3">
           <input type="text" name="name" required
                  placeholder="Nombre de la lista — ej. Campamento de San Jorge"
-                 class="flex-1 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-500" />
+                 class="flex-1 border border-slate-200 bg-slate-50/40 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-sm" />
           <button type="submit"
-                  class="bg-forest-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-forest-900 transition-colors whitespace-nowrap">
-            + Crear
+                  class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors whitespace-nowrap shadow-sm">
+            + Crear lista
           </button>
         </div>
-        <div class="flex gap-3 items-center">
+        <div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
           <input type="text" name="description"
-                 placeholder="Descripción opcional"
-                 class="flex-1 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-500" />
-          <label class="flex items-center gap-2 text-sm text-stone-600 cursor-pointer whitespace-nowrap">
-            <input type="checkbox" name="is_public" value="1" class="accent-forest-700 w-4 h-4">
+                 placeholder="Descripción opcional de la lista..."
+                 class="flex-1 border border-slate-200 bg-slate-50/40 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-sm" />
+          <label class="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer whitespace-nowrap px-1">
+            <input type="checkbox" name="is_public" value="1" class="accent-emerald-600 w-4 h-4">
             Lista pública
           </label>
         </div>
@@ -185,23 +198,25 @@
     {% endif %}
 
     {% if custom_lists %}
-    <div class="space-y-4">
+    <div class="space-y-3">
       {% for lst in custom_lists %}
-      <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 flex items-center justify-between gap-4">
-        <div class="flex items-start gap-4 min-w-0">
-          <div class="text-3xl shrink-0">{% if lst.is_public %}📂{% else %}🔒{% endif %}</div>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex items-center justify-between gap-4 transition-all hover:border-slate-300">
+        <div class="flex items-start gap-3.5 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-xl shrink-0">
+            {% if lst.is_public %}📂{% else %}🔒{% endif %}
+          </div>
           <div class="min-w-0">
             <a href="{{ url_for('community.view_list', list_id=lst.id) }}"
-               class="font-display font-bold text-stone-800 hover:text-forest-700 transition-colors block truncate">
+               class="text-sm font-bold text-slate-800 hover:text-emerald-600 transition-colors block truncate">
               {{ lst.name }}
             </a>
             {% if lst.description %}
-            <p class="text-sm text-stone-400 truncate mt-0.5">{{ lst.description }}</p>
+            <p class="text-xs text-slate-400 truncate mt-0.5">{{ lst.description }}</p>
             {% endif %}
-            <div class="flex items-center gap-3 mt-1.5 text-xs text-stone-400">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1.5 text-[11px] text-slate-400 font-medium">
               <span>{{ lst.activities.count() }} actividad{% if lst.activities.count() != 1 %}es{% endif %}</span>
               <span>·</span>
-              <span>{% if lst.is_public %}Pública{% else %}Privada{% endif %}</span>
+              <span class="{% if lst.is_public %}text-emerald-600 font-semibold{% else %}text-slate-400{% endif %}">{% if lst.is_public %}Pública{% else %}Privada{% endif %}</span>
               <span>·</span>
               <span>{{ lst.created_at.strftime('%d %b %Y') }}</span>
             </div>
@@ -209,10 +224,10 @@
         </div>
         {% if is_own %}
         <form method="POST" action="{{ url_for('community.delete_list', list_id=lst.id) }}"
-              onsubmit="return confirm('¿Eliminar «{{ lst.name }}»?')"
+              onsubmit="return confirm('¿Seguro que deseas eliminar la lista «{{ lst.name }}»?')"
               class="shrink-0">
           <button type="submit"
-                  class="text-xs text-stone-400 hover:text-red-500 transition-colors px-3 py-1.5 border border-stone-200 hover:border-red-300 rounded-lg">
+                  class="text-[11px] text-slate-400 hover:text-rose-600 hover:border-rose-200 transition-all px-2.5 py-1.5 border border-slate-200 bg-white rounded-lg font-semibold">
             Eliminar
           </button>
         </form>
@@ -221,12 +236,12 @@
       {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-16 bg-white rounded-2xl border border-stone-200">
-      <div class="text-5xl mb-3">📂</div>
-      <h3 class="font-display font-bold text-stone-700 mb-1">Sin listas todavía</h3>
-      <p class="text-stone-400 text-sm">
-        {% if is_own %}Crea tu primera lista para organizar actividades por campamentos, reuniones o temáticas.
-        {% else %}Este scouter no tiene listas públicas.{% endif %}
+    <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm px-4">
+      <div class="text-4xl mb-3">📂</div>
+      <h3 class="text-sm font-bold text-slate-700 mb-1">Sin listas todavía</h3>
+      <p class="text-slate-400 text-xs">
+        {% if is_own %}Crea tu primera lista para organizar dinámicas por campamentos, secciones o temáticas especiales.
+        {% else %}Este scouter no tiene listas públicas disponibles.{% endif %}
       </p>
     </div>
     {% endif %}

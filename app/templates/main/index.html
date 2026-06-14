@@ -2,57 +2,68 @@
 {% block title %}Explorar actividades{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="w-full">
 
-  <!-- PAGE HEADER -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-display font-black text-forest-900 mb-1">Explorar actividades</h1>
-    <p class="text-stone-500">{{ activities|length }} actividad{% if activities|length != 1 %}es{% endif %} encontrada{% if activities|length != 1 %}s{% endif %}</p>
+  <div class="mb-6 border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="shrink-0">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Explorar actividades</h1>
+      <p class="text-xs text-slate-500 mt-0.5">
+        {{ activities|length }} actividad{% if activities|length != 1 %}es{% endif %} encontrada{% if activities|length != 1 %}s{% endif %}
+      </p>
+    </div>
+
+    <div class="w-full md:flex-grow md:max-w-xl">
+      <form method="GET" action="{{ url_for('main.index') }}" class="relative flex items-center">
+        {% if filters.unit %}<input type="hidden" name="unit" value="{{ filters.unit }}">{% endif %}
+        {% if filters.category %}<input type="hidden" name="category" value="{{ filters.category }}">{% endif %}
+        {% if filters.environment %}<input type="hidden" name="environment" value="{{ filters.environment }}">{% endif %}
+        {% if filters.duration %}<input type="hidden" name="duration" value="{{ filters.duration }}">{% endif %}
+
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm"></i>
+        </div>
+        <input type="text" name="q" value="{{ filters.q }}"
+               placeholder="Buscar por título, palabra clave o descripción..."
+               class="w-full pl-10 pr-24 py-2.5 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent shadow-sm transition-all" />
+        <button type="submit" 
+                class="absolute right-1.5 top-1/2 -translate-y-1/2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors">
+          Buscar
+        </button>
+      </form>
+    </div>
   </div>
 
-  <div class="flex flex-col lg:flex-row gap-8">
+  <div class="flex flex-col lg:flex-row gap-6">
 
-    <!-- SIDEBAR FILTERS -->
-    <aside class="w-full lg:w-72 shrink-0">
+    <aside class="w-full lg:w-64 shrink-0">
       <form method="GET" action="{{ url_for('main.index') }}" id="filter-form">
-        <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+        {% if filters.q %}<input type="hidden" name="q" value="{{ filters.q }}">{% endif %}
 
-          <!-- Search -->
-          <div class="p-5 border-b border-stone-100">
-            <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Búsqueda</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">🔍</span>
-              <input type="text" name="q" value="{{ filters.q }}"
-                     placeholder="Título o descripción…"
-                     class="w-full pl-9 pr-3 py-2.5 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent bg-stone-50" />
-            </div>
-          </div>
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 
-          <!-- Unit filter -->
-          <div class="p-5 border-b border-stone-100">
-            <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">Sección</label>
-            <div class="space-y-2">
+          <div class="p-4 border-b border-slate-100">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Sección</label>
+            <div class="space-y-1.5">
               <label class="flex items-center gap-2 cursor-pointer group">
                 <input type="radio" name="unit" value="" {% if not filters.unit %}checked{% endif %}
-                       class="accent-forest-700" onchange="this.form.submit()">
-                <span class="text-sm text-stone-600 group-hover:text-stone-900">Todas las secciones</span>
+                       class="accent-emerald-600 w-4 h-4" onchange="this.form.submit()">
+                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Todas las secciones</span>
               </label>
               {% for unit in units %}
               <label class="flex items-center gap-2 cursor-pointer group">
                 <input type="radio" name="unit" value="{{ unit.slug }}"
                        {% if filters.unit == unit.slug %}checked{% endif %}
-                       class="accent-forest-700" onchange="this.form.submit()">
-                <span class="text-sm text-stone-600 group-hover:text-stone-900">{{ unit.name }}</span>
+                       class="accent-emerald-600 w-4 h-4" onchange="this.form.submit()">
+                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{{ unit.name }}</span>
               </label>
               {% endfor %}
             </div>
           </div>
 
-          <!-- Category filter -->
-          <div class="p-5 border-b border-stone-100">
-            <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">Tipo de actividad</label>
+          <div class="p-4 border-b border-slate-100">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tipo de actividad</label>
             <select name="category" onchange="this.form.submit()"
-                    class="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-forest-500">
+                    class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
               <option value="">Todas las categorías</option>
               {% for cat in categories %}
               <option value="{{ cat.slug }}" {% if filters.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
@@ -60,31 +71,29 @@
             </select>
           </div>
 
-          <!-- Environment filter -->
-          <div class="p-5 border-b border-stone-100">
-            <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">Entorno</label>
-            <div class="space-y-2">
+          <div class="p-4 border-b border-slate-100">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Entorno</label>
+            <div class="space-y-1.5">
               {% for val, label in [('', 'Cualquier entorno'), ('interior', '🏠 Interior'), ('exterior', '🌲 Exterior'), ('indiferente', '↔️ Indiferente')] %}
               <label class="flex items-center gap-2 cursor-pointer group">
                 <input type="radio" name="environment" value="{{ val }}"
                        {% if filters.environment == val %}checked{% endif %}
-                       class="accent-forest-700" onchange="this.form.submit()">
-                <span class="text-sm text-stone-600 group-hover:text-stone-900">{{ label }}</span>
+                       class="accent-emerald-600 w-4 h-4" onchange="this.form.submit()">
+                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{{ label }}</span>
               </label>
               {% endfor %}
             </div>
           </div>
 
-          <!-- Duration filter -->
-          <div class="p-5">
-            <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">Duración</label>
-            <div class="space-y-2">
+          <div class="p-4">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Duración</label>
+            <div class="space-y-1.5">
               {% for val, label in [('', 'Cualquier duración'), ('<30 min', '⚡ Menos de 30 min'), ('30-60 min', '⏱ 30 a 60 min'), ('+60 min', '🕐 Más de 60 min')] %}
               <label class="flex items-center gap-2 cursor-pointer group">
                 <input type="radio" name="duration" value="{{ val }}"
                        {% if filters.duration == val %}checked{% endif %}
-                       class="accent-forest-700" onchange="this.form.submit()">
-                <span class="text-sm text-stone-600 group-hover:text-stone-900">{{ label }}</span>
+                       class="accent-emerald-600 w-4 h-4" onchange="this.form.submit()">
+                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{{ label }}</span>
               </label>
               {% endfor %}
             </div>
@@ -94,79 +103,61 @@
 
         {% if filters.q or filters.unit or filters.category or filters.environment or filters.duration %}
         <a href="{{ url_for('main.index') }}"
-           class="mt-3 flex items-center justify-center gap-2 w-full py-2 text-sm font-medium text-stone-500 hover:text-red-600 transition-colors">
-           <span>✕</span> Limpiar filtros
+           class="mt-2 flex items-center justify-center gap-1.5 w-full py-2 text-xs font-semibold text-slate-400 hover:text-rose-600 transition-colors">
+            <span>✕</span> Limpiar filtros
         </a>
         {% endif %}
       </form>
     </aside>
 
-    <!-- ACTIVITY GRID -->
     <div class="flex-1 min-w-0">
       {% if activities %}
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {% for activity in activities %}
         <a href="{{ url_for('main.activity_detail', activity_id=activity.id) }}"
-           class="group bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-md hover:border-forest-300 transition-all duration-200 flex flex-col overflow-hidden">
+           class="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col overflow-hidden">
+          
+          <div class="h-1.5 {% if activity.environment == 'exterior' %}bg-emerald-500{% elif activity.environment == 'interior' %}bg-sky-400{% else %}bg-amber-500{% endif %}"></div>
 
-          <!-- Card color strip by first category -->
-          <div class="h-1.5 {% if activity.environment == 'exterior' %}bg-forest-500{% elif activity.environment == 'interior' %}bg-blue-400{% else %}bg-earth-500{% endif %}"></div>
-
-          <div class="p-5 flex flex-col flex-1">
-            <!-- Category & unit badges -->
-            <div class="flex flex-wrap gap-1.5 mb-3">
+          <div class="p-4 flex flex-col flex-1">
+            <div class="flex flex-wrap gap-1 mb-2.5">
               {% for cat in activity.categories[:2] %}
-              <span class="bg-forest-50 text-forest-800 text-xs font-semibold px-2 py-0.5 rounded-full border border-forest-200">{{ cat.name }}</span>
+              <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-100">{{ cat.name }}</span>
               {% endfor %}
               {% for unit in activity.units[:2] %}
-              <span class="bg-earth-50 text-earth-700 text-xs font-semibold px-2 py-0.5 rounded-full border border-earth-200">{{ unit.name }}</span>
+              <span class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-200">{{ unit.name }}</span>
               {% endfor %}
             </div>
 
-            <!-- Title -->
-            <h2 class="font-display font-bold text-stone-900 group-hover:text-forest-800 transition-colors mb-2 leading-snug">
+            <h2 class="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors mb-1.5 text-base leading-tight">
               {{ activity.title }}
             </h2>
 
-            <!-- Description excerpt -->
-            <p class="text-sm text-stone-500 line-clamp-3 flex-1 mb-4">
+            <p class="text-xs text-slate-500 line-clamp-3 flex-1 mb-3.5 leading-relaxed">
               {{ activity.description[:160] }}{% if activity.description|length > 160 %}…{% endif %}
             </p>
 
-            <!-- Meta info -->
-            <div class="flex items-center justify-between text-xs text-stone-400 pt-3 border-t border-stone-100">
-              <span class="flex items-center gap-1">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 pt-2.5 border-t border-slate-100">
+              <span class="flex items-center gap-1 font-medium">
                 {% if activity.environment == 'interior' %}🏠{% elif activity.environment == 'exterior' %}🌲{% else %}↔️{% endif %}
                 {{ activity.environment|capitalize }}
               </span>
-              <span class="flex items-center gap-1">
+              <span class="flex items-center gap-1 font-medium">
                 ⏱ {{ activity.duration_range }}
               </span>
-              <span>{{ activity.author.username }}</span>
+              <span class="bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 text-slate-500">{{ activity.author.username }}</span>
             </div>
           </div>
         </a>
         {% endfor %}
       </div>
-
       {% else %}
-      <!-- EMPTY STATE -->
-      <div class="flex flex-col items-center justify-center py-20 text-center">
-        <div class="text-6xl mb-4">🧭</div>
-        <h3 class="font-display text-xl font-bold text-stone-700 mb-2">No se encontraron actividades</h3>
-        <p class="text-stone-400 text-sm max-w-sm mb-6">
-          {% if filters.q or filters.unit or filters.category or filters.environment or filters.duration %}
-            Prueba a ajustar los filtros o buscar con otras palabras.
-          {% else %}
-            Todavía no hay actividades aprobadas. ¡Sé el primero en compartir!
-          {% endif %}
+      <div class="flex flex-col items-center justify-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm text-center px-4">
+        <div class="text-4xl mb-3">🧭</div>
+        <h3 class="text-base font-bold text-slate-700 mb-1">No se encontraron actividades</h3>
+        <p class="text-slate-400 text-xs max-w-xs mb-4">
+          Prueba a ajustar los filtros o buscar con otras palabras.
         </p>
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('main.upload_activity') }}"
-           class="bg-forest-700 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:bg-forest-900 transition-colors">
-           Subir una actividad
-        </a>
-        {% endif %}
       </div>
       {% endif %}
     </div>
