@@ -168,7 +168,7 @@
               <i class="fa-solid fa-clock text-slate-400 w-4 text-center"></i> Duración
             </span>
             <span class="font-semibold text-slate-800 text-xs">
-              ⏱ {{ activity.duration_range }}
+              ⏱ {{ durations_display.get(activity.duration_range, activity.duration_range) }}
             </span>
           </div>
 
@@ -264,6 +264,25 @@
         <form method="POST" action="{{ url_for('admin.approve_activity', activity_id=activity.id) }}" class="w-full">
           <button type="submit" class="w-full bg-amber-600 text-white text-xs font-bold py-2 px-4 rounded-xl hover:bg-amber-700 transition-colors shadow-sm shadow-amber-200">
             ✓ Aprobar Actividad
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+      {% if current_user.is_authenticated and (current_user.id == activity.user_id or current_user.is_admin()) %}
+      <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 shadow-sm">
+        <div class="mb-3">
+          <p class="font-bold text-rose-900 text-xs uppercase tracking-wide flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400"></i> Zona de peligro
+          </p>
+          <p class="text-[11px] text-rose-600 mt-0.5">Esta acción es permanente y no se puede deshacer.</p>
+        </div>
+        <form method="POST"
+              action="{{ url_for('main.delete_activity', activity_id=activity.id) }}"
+              onsubmit="return confirm('¿Seguro que quieres eliminar «{{ activity.title }}»? Esta acción no se puede deshacer.')">
+          <button type="submit"
+                  class="w-full bg-white hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-300 hover:border-rose-600 text-xs font-bold py-2 px-4 rounded-xl transition-all shadow-sm">
+            <i class="fa-solid fa-trash-can mr-1"></i> Eliminar actividad
           </button>
         </form>
       </div>

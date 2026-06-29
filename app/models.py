@@ -4,6 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login_manager
 
+VALID_DURATIONS = ['less_30m', '30_60m', '1_2h', '2_4h', 'more_4h', 'multiple_days']
+
 activity_units = db.Table('activity_units',
     db.Column('activity_id', db.Integer, db.ForeignKey('activity.id'), primary_key=True),
     db.Column('unit_id', db.Integer, db.ForeignKey('unit.id'), primary_key=True)
@@ -80,8 +82,6 @@ class Activity(db.Model):
     duration_range = db.Column(db.String(20), nullable=False)
     min_participants = db.Column(db.Integer, nullable=True)
     max_participants = db.Column(db.Integer, nullable=True)
-    age_min = db.Column(db.Integer, nullable=True)
-    age_max = db.Column(db.Integer, nullable=True)
 
     attachment_filename = db.Column(db.String(260), nullable=True)
     attachment_original_name = db.Column(db.String(260), nullable=True)
@@ -125,16 +125,6 @@ class Activity(db.Model):
             return f'Mín. {self.min_participants} participantes'
         if self.max_participants:
             return f'Máx. {self.max_participants} participantes'
-        return None
-
-    @property
-    def age_display(self):
-        if self.age_min and self.age_max:
-            return f'{self.age_min}–{self.age_max} años'
-        if self.age_min:
-            return f'Desde {self.age_min} años'
-        if self.age_max:
-            return f'Hasta {self.age_max} años'
         return None
 
     def __repr__(self):

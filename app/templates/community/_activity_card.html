@@ -24,7 +24,8 @@
     </p>
 
     <div class="flex items-center justify-between text-xs text-stone-400 pt-3 border-t border-stone-100">
-      <span>⏱ {{ activity.duration_range }}</span>
+      <span>{{ environments.get(activity.environment, activity.environment) }}</span>
+      <span>⏱ {{ durations_display.get(activity.duration_range, activity.duration_range) }}</span>
       <span class="flex items-center gap-1">
         ❤️ {{ activity.likes_count }}
         {% if activity.attachment_filename %}<span class="ml-2">{{ activity.attachment_icon }}</span>{% endif %}

@@ -81,7 +81,7 @@
 
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-paperclip text-slate-300"></i> Archivo o Ficha maquetada <span class="text-slate-400 font-normal lowercase">(opcional)</span>
+            <i class="fa-solid fa-paperclip text-slate-300"></i> Archivo o Ficha maquetada o Anexos <span class="text-slate-400 font-normal lowercase">(opcional)</span>
           </h3>
           <label for="attachment" id="drop-zone"
                  class="flex flex-col items-center justify-center gap-2 w-full min-h-[120px] border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/30 transition-all group p-4">
@@ -121,8 +121,8 @@
             </label>
             <select name="duration_range"
                     class="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-sm">
-              {% for d in durations %}
-              <option value="{{ d }}" {% if form_data.get('duration_range') == d %}selected{% endif %}>⏱ {{ d }}</option>
+              {% for value, label in durations %}
+              <option value="{{ value }}" {% if form_data.get('duration_range') == value %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
             </select>
           </div>
@@ -145,18 +145,6 @@
               </div>
               <div>
                 <input type="number" name="max_participants" min="1" max="500" value="{{ form_data.get('max_participants', '') }}" placeholder="Máx. personas" class="w-full border border-slate-200 bg-slate-50/40 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-sm" />
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-2 border-t border-slate-100">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block mb-2">Rango de Edades</span>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <input type="number" name="age_min" min="4" max="30" value="{{ form_data.get('age_min', '') }}" placeholder="Edad mín." class="w-full border border-slate-200 bg-slate-50/40 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-sm" />
-              </div>
-              <div>
-                <input type="number" name="age_max" min="4" max="30" value="{{ form_data.get('age_max', '') }}" placeholder="Edad máx." class="w-full border border-slate-200 bg-slate-50/40 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-sm" />
               </div>
             </div>
           </div>

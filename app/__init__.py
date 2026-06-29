@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask import render_template
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -52,5 +53,25 @@ def create_app():
         from app import models
         db.create_all()
         models.seed_data()
+        
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template('errors/404.html'), 404
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template('errors/403.html'), 403
+    
+    from app.main.routes import DURATIONS_DISPLAY
+
+    @app.context_processor
+    def inject_globals():
+        return dict(durations_display=DURATIONS_DISPLAY)
+    
+    from app.main.routes import ENVIRONMENTS, DURATIONS_DISPLAY
+
+    @app.context_processor
+    def inject_globals():
+        return dict(environments=ENVIRONMENTS, durations_display=DURATIONS_DISPLAY)
 
     return app

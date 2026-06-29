@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Acceso denegado{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+  <div class="text-6xl mb-4">🔒</div>
+  <h1 class="text-4xl font-black text-slate-800 mb-2">403</h1>
+  <p class="text-slate-500 text-sm mb-6 max-w-sm">
+    No tienes permiso para realizar esta acción.
+  </p>
+  <a href="{{ url_for('main.index') }}"
+     class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-colors shadow-sm">
+    Volver al explorador
+  </a>
+</div>
+{% endblock %}

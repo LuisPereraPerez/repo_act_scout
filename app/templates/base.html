@@ -73,7 +73,11 @@
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="p-4 rounded-2xl flex items-center space-x-3 border bg-white shadow-sm {% if category == 'error' %}text-rose-700 border-rose-100 bg-rose-50/50{% else %}text-emerald-700 border-emerald-100 bg-emerald-50/50{% endif %}" role="alert">
+                        <div class="flash-message transition-all duration-500 ease-in-out opacity-100 overflow-hidden
+                                    p-4 rounded-2xl flex items-center space-x-3 border bg-white shadow-sm
+                                    {% if category == 'error' %}text-rose-700 border-rose-100 bg-rose-50/50
+                                    {% else %}text-emerald-700 border-emerald-100 bg-emerald-50/50{% endif %}"
+                            role="alert">
                             <i class="fa-solid {% if category == 'error' %}fa-circle-xmark text-rose-500{% else %}fa-circle-check text-emerald-500{% endif %} text-lg shrink-0"></i>
                             <span class="text-sm font-medium">{{ message }}</span>
                         </div>
@@ -92,6 +96,24 @@
             &copy; 2026 ScoutAct. Desarrollado para Grupos Scouts.
         </div>
     </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var flashes = document.querySelectorAll('.flash-message');
+        flashes.forEach(function (el) {
+        setTimeout(function () {
+            el.style.opacity = '0';
+            setTimeout(function () {
+            el.style.maxHeight = '0';
+            el.style.paddingTop = '0';
+            el.style.paddingBottom = '0';
+            el.style.marginBottom = '0';
+            el.style.borderWidth = '0';
+            }, 500);
+        }, 4000);
+        });
+    });
+    </script>
 
 </body>
 </html>
